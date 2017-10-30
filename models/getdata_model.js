@@ -2,7 +2,7 @@ const request = require('request');
 const cheerio = require('cheerio');
 const areaData = require('../data/store_id.json');
 
-const crawlerData = async(paths) => {
+const crawlerData = async(url) => {
     const loadData = new GetDatas();
 
     let areaDatas =[];
@@ -11,7 +11,7 @@ const crawlerData = async(paths) => {
         const areaID = areaData.result[i].areaID;
         const areaName = areaData.result[i].area;
         //取得地區名稱
-        const townName = await loadData.getTownName(areaID);
+        const townName = await loadData.getTownName(url, areaID);
         // 有些townName可能為0，因此進行篩選
         if (townName.length !== 0) {
             areaDatas.push({cityName: areaName, townName: townName});
@@ -26,7 +26,7 @@ const crawlerData = async(paths) => {
             let city = areaDatas[i].cityName;
             let town = areaDatas[i].townName[j];
 
-            const storeDatas = await loadData.getStoreData(city, town); 
+            const storeDatas = await loadData.getStoreData(url, city, town); 
             totalStoreDatas.push({city: city, town: town, storeDatas: storeDatas});
         }
     }
@@ -36,11 +36,11 @@ const crawlerData = async(paths) => {
 module.exports = crawlerData;
 
 class GetDatas {
-    getTownName(cityID) {
+    getTownName(url, cityID) {
         return new Promise (function(resolve, reject){
             let townNameArray = [];
             request.post({
-                url: "http://emap.pcsc.com.tw/EMapSDK.aspx",
+                url: url,
                 form: {
                     commandid: "GetTown",
                     cityid: cityID
@@ -56,7 +56,7 @@ class GetDatas {
                 })   
         })
     }
-    async getStoreData(cityName, townName) {
+    async getStoreData(url, cityName, townName) {
         let storeArray = [];
         let storeObj = {};
         let storeID = [];
@@ -68,7 +68,7 @@ class GetDatas {
 
         return new Promise(function(resolve, reject){
             request.post({
-                url: "http://emap.pcsc.com.tw/EMapSDK.aspx",
+                url: url,
                 form : {
                     commandid: "SearchStore",
                     city: cityName,
