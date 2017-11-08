@@ -28,9 +28,11 @@ const crawlerData = async (url) => {
             let city = areaDatas[i].cityName;
             let town = areaDatas[i].townName[j];
             const storeDatas = await loadData.getStoreData(url, city, town);
-            // value = value + storeDatas.length;
-            // console.log(value); // 全台店家數量
-            totalStoreDatas.push({ city: city, town: town, storeDatas: storeDatas });
+            if (storeDatas[0].storeID !== undefined) {
+                // value = value + storeDatas.length;
+                // console.log(value); // 全台店家數量
+                totalStoreDatas.push({ city: city, town: town, storeDatas: storeDatas });
+            }
         }
     }
 
@@ -51,10 +53,10 @@ const crawlerData = async (url) => {
     //         loadData.getStoreData(url, areaDatas[i].cityName, areaDatas[i].townName[j + 9])
     //         ]).
     //             then(values => {
-    //                 // console.log("values: " + JSON.stringify(values));
     //                 for (let i = 0; i < values.length; i += 1) {
-    //                     if (values[i].length !== 0) {
-    //                         // console.log(JSON.stringify(values[i]));
+    //                     if (values[i][0].storeID !== undefined) {
+    //                         // value = value + values[i].length;
+    //                         // console.log(value); // 全台店家數量
     //                         totalStoreDatas.push({ storeDatas: values[i] });
     //                     }
     //                 }
@@ -137,7 +139,7 @@ class GetDatas {
                 for (let i = 0; i <= storeValues; i += 1) {
                     storeArray.push({ storeCity: cityName, storeTown: townName, storeID: storeID[i], storeName: storeName[i], storeTele: storeTele[i], storeFax: storeFax[i], storeAddress: storeAddress[i] });
                 }
-                
+
                 resolve(storeArray);
             })
         })
