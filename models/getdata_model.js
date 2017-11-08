@@ -20,6 +20,7 @@ const crawlerData = async (url) => {
 
     //取得各區店家資料
     let totalStoreDatas = [];
+    // let value = 0;
 
     // 一次一個request慢慢抓取
     for (let i = 0; i < areaDatas.length; i += 1) { // 各縣市
@@ -27,6 +28,8 @@ const crawlerData = async (url) => {
             let city = areaDatas[i].cityName;
             let town = areaDatas[i].townName[j];
             const storeDatas = await loadData.getStoreData(url, city, town);
+            // value = value + storeDatas.length;
+            // console.log(value); // 全台店家數量
             totalStoreDatas.push({ city: city, town: town, storeDatas: storeDatas });
         }
     }
@@ -58,7 +61,6 @@ const crawlerData = async (url) => {
     //             })
     //     }
     // }
-
     return totalStoreDatas;
 }
 
@@ -66,7 +68,7 @@ module.exports = crawlerData;
 
 class GetDatas {
     getTownName(url, cityID) {
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             let townNameArray = [];
             request.post({
                 url: url,
@@ -88,7 +90,6 @@ class GetDatas {
     }
     getStoreData(url, cityName, townName) {
         let storeArray = [];
-        let storeObj = {};
         let storeID = [];
         let storeName = [];
         let storeTele = [];
@@ -96,7 +97,7 @@ class GetDatas {
         let storeAddress = [];
         let storeValues = "";
 
-        return new Promise(function (resolve, reject) {
+        return new Promise((resolve, reject) => {
             request.post({
                 url: url,
                 form: {
@@ -133,9 +134,10 @@ class GetDatas {
                     storeAddress.push($(this).text());
                 })
 
-                for (let i = 0; i < storeValues; i += 1) {
+                for (let i = 0; i <= storeValues; i += 1) {
                     storeArray.push({ storeCity: cityName, storeTown: townName, storeID: storeID[i], storeName: storeName[i], storeTele: storeTele[i], storeFax: storeFax[i], storeAddress: storeAddress[i] });
                 }
+                
                 resolve(storeArray);
             })
         })
